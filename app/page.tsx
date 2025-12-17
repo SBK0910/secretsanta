@@ -1,65 +1,158 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+	const [showForm, setShowForm] = useState(false);
+	const [phoneNumber, setPhoneNumber] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [submitted, setSubmitted] = useState(false);
+	const videoRef = useRef<HTMLVideoElement>(null);
+
+	const handleVideoEnd = () => {
+		setShowForm(true);
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+
+		// Validate Indian phone number (10 digits)
+		const phoneRegex = /^[6-9]\d{9}$/;
+		if (!phoneRegex.test(phoneNumber)) {
+			alert("Please enter a valid 10-digit Indian phone number");
+			return;
+		}
+
+		setLoading(true);
+
+		try {
+			const response = await fetch("/api/send-voucher", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ phoneNumber }),
+			});
+
+			if (response.ok) {
+				setSubmitted(true);
+			} else {
+				alert("Something went wrong. Please try again.");
+			}
+		} catch (error) {
+			alert("Error submitting. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return (
+		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-red-900 via-green-900 to-red-900 p-4">
+			{/* Animated Christmas Background */}
+			<div className="absolute inset-0 overflow-hidden">
+				{/* Snowflakes */}
+				<div className="snowflake absolute text-white text-2xl animate-[fall_10s_linear_infinite]" style={{ left: '10%', animationDelay: '0s' }}>❄</div>
+				<div className="snowflake absolute text-white text-3xl animate-[fall_12s_linear_infinite]" style={{ left: '20%', animationDelay: '2s' }}>❄</div>
+				<div className="snowflake absolute text-white text-2xl animate-[fall_15s_linear_infinite]" style={{ left: '30%', animationDelay: '4s' }}>❄</div>
+				<div className="snowflake absolute text-white text-4xl animate-[fall_11s_linear_infinite]" style={{ left: '40%', animationDelay: '1s' }}>❄</div>
+				<div className="snowflake absolute text-white text-2xl animate-[fall_13s_linear_infinite]" style={{ left: '50%', animationDelay: '3s' }}>❄</div>
+				<div className="snowflake absolute text-white text-3xl animate-[fall_14s_linear_infinite]" style={{ left: '60%', animationDelay: '5s' }}>❄</div>
+				<div className="snowflake absolute text-white text-2xl animate-[fall_16s_linear_infinite]" style={{ left: '70%', animationDelay: '2s' }}>❄</div>
+				<div className="snowflake absolute text-white text-4xl animate-[fall_12s_linear_infinite]" style={{ left: '80%', animationDelay: '4s' }}>❄</div>
+				<div className="snowflake absolute text-white text-3xl animate-[fall_15s_linear_infinite]" style={{ left: '90%', animationDelay: '6s' }}>❄</div>
+
+				{/* Christmas ornaments */}
+				<div className="absolute top-10 left-5 text-6xl animate-pulse">🎄</div>
+				<div className="absolute top-20 right-10 text-5xl animate-bounce" style={{ animationDuration: '3s' }}>⭐</div>
+				<div className="absolute bottom-20 left-10 text-5xl animate-pulse" style={{ animationDelay: '1s' }}>🎁</div>
+				<div className="absolute bottom-10 right-20 text-6xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '2s' }}>🎄</div>
+				<div className="absolute top-1/3 left-20 text-4xl opacity-50">🔔</div>
+				<div className="absolute top-2/3 right-10 text-4xl opacity-50">🎅</div>
+			</div>
+
+			<main className="relative z-10 flex w-full max-w-4xl flex-col items-center justify-center gap-8">
+				{/* Video Player */}
+				{!submitted && (
+					<Card className="w-full overflow-hidden shadow-2xl">
+						<CardContent className="p-0">
+							<video
+								ref={videoRef}
+								className="w-full aspect-video bg-black"
+								autoPlay
+								playsInline
+								onEnded={handleVideoEnd}
+								controlsList="nodownload nofullscreen noremoteplayback"
+								disablePictureInPicture
+								onContextMenu={(e) => e.preventDefault()}
+							>
+								<source src="/jingle-bells.mp4" type="video/mp4" />
+								Your browser does not support the video tag.
+							</video>
+						</CardContent>
+					</Card>
+				)}
+
+				{/* Phone Number Form */}
+				{showForm && !submitted && (
+					<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+						<CardContent className="p-6">
+							<div className="space-y-4">
+								<div className="text-center space-y-2">
+									<h1 className="text-2xl font-bold text-green-700">
+										🎄 Congratulations! 🎄
+									</h1>
+									<p className="text-gray-600">
+										Enter your phone number to receive your ₹1000 Amazon voucher!
+									</p>
+								</div>
+
+								<form onSubmit={handleSubmit} className="space-y-4">
+									<div>
+										<Input
+											type="tel"
+											placeholder="Enter 10-digit phone number"
+											value={phoneNumber}
+											onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+											maxLength={10}
+											className="text-lg"
+											required
+										/>
+									</div>
+
+									<Button
+										type="submit"
+										className="w-full bg-green-600 hover:bg-green-700 text-white"
+										disabled={loading}
+									>
+										{loading ? "Sending..." : "Claim My Voucher 🎁"}
+									</Button>
+								</form>
+							</div>
+						</CardContent>
+					</Card>
+				)}
+
+				{/* Success Message */}
+				{submitted && (
+					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500">
+						<CardContent className="p-8 text-center space-y-4">
+							<div className="text-6xl">🎉</div>
+							<h1 className="text-3xl font-bold text-green-700">
+								Success!
+							</h1>
+							<p className="text-lg text-gray-600">
+								Your ₹1000 Amazon voucher has been sent to your phone number!
+							</p>
+							<p className="text-sm text-gray-500">
+								Please check your SMS/Email for the voucher code.
+							</p>
+						</CardContent>
+					</Card>
+				)}
+			</main>
+		</div>
+	);
 }
