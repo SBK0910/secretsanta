@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 
 type Step = "initial" | "video" | "form" | "success" | "error";
 
-export default function Home() {
+function SecretSantaContent() {
 	const [step, setStep] = useState<Step>("initial");
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -175,7 +175,7 @@ export default function Home() {
 
 			{/* Success Message */}
 			{step === "success" && (
-				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-gradient-to-b from-white to-red-50">
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-linear-to-b from-white to-red-50">
 					<CardContent className="p-8 text-center space-y-6">
 						<div className="text-6xl">🎅🎉</div>
 						<h1 className="text-xl lg:text-3xl font-bold text-red-700">
@@ -202,13 +202,28 @@ export default function Home() {
 						<h1 className="text-xl lg:text-3xl font-bold text-red-700">
 							Access Denied
 						</h1>
-						<p className="sm:text-base text-gray-600">
-							{errorMessage || "You need a valid invitation link to access this gift."}
-						</p>
-					</CardContent>
-				</Card>
-			)}
-		</main>
-	</div>
+					<p className="sm:text-base text-gray-600">
+						{errorMessage || "You need a valid invitation link to access this gift."}
+					</p>
+				</CardContent>
+			</Card>
+		)}
+	</main>
+</div>
+);
+}
+
+export default function Home() {
+	return (
+		<Suspense fallback={
+			<div className="fixed inset-0 flex items-center justify-center bg-linear-to-br from-red-600 via-white to-red-700">
+				<div className="flex flex-col items-center gap-4">
+					<div className="w-12 h-12 border-4 border-red-200 border-t-red-600 rounded-full animate-spin"></div>
+					<p className="sm:text-base text-gray-600">Loading...</p>
+				</div>
+			</div>
+		}>
+			<SecretSantaContent />
+		</Suspense>
 	);
 }
