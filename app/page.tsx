@@ -4,15 +4,28 @@ import { useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function Home() {
+	const [showVideo, setShowVideo] = useState(false);
 	const [showForm, setShowForm] = useState(false);
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
 
+	const handleClaimClick = () => {
+		setShowVideo(true);
+		// Small delay to ensure video element is mounted before playing
+		setTimeout(() => {
+			if (videoRef.current) {
+				videoRef.current.play();
+			}
+		}, 100);
+	};
+
 	const handleVideoEnd = () => {
+		setShowVideo(false);
 		setShowForm(true);
 	};
 
@@ -42,7 +55,7 @@ export default function Home() {
 			} else {
 				alert("Something went wrong. Please try again.");
 			}
-		} catch (error) {
+		} catch {
 			alert("Error submitting. Please try again.");
 		} finally {
 			setLoading(false);
@@ -50,49 +63,85 @@ export default function Home() {
 	};
 
 	return (
-		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-red-900 via-green-900 to-red-900 p-4">
+		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-red-600 via-white to-red-700 p-4">
+			{/* Santa Image - fixed position bottom left, non-colliding */}
+			<div className="fixed bottom-4 left-4 z-0 pointer-events-none select-none">
+				<Image
+					src="/santa.png"
+					alt="Santa Claus"
+					width={300}
+					height={300}
+					className="drop-shadow-2xl object-contain w-32 md:w-40 lg:w-48"
+					style={{ 
+						mixBlendMode: 'multiply',
+						filter: 'drop-shadow(0 20px 25px rgb(0 0 0 / 0.15))'
+					}}
+					priority
+					unoptimized
+				/>
+			</div>
+
 			{/* Animated Christmas Background */}
 			<div className="absolute inset-0 overflow-hidden">
 				{/* Snowflakes */}
-				<div className="snowflake absolute text-white text-2xl animate-[fall_10s_linear_infinite]" style={{ left: '10%', animationDelay: '0s' }}>❄</div>
+				<div className="snowflake absolute text-red-200 text-2xl animate-[fall_10s_linear_infinite]" style={{ left: '10%', animationDelay: '0s' }}>❄</div>
 				<div className="snowflake absolute text-white text-3xl animate-[fall_12s_linear_infinite]" style={{ left: '20%', animationDelay: '2s' }}>❄</div>
-				<div className="snowflake absolute text-white text-2xl animate-[fall_15s_linear_infinite]" style={{ left: '30%', animationDelay: '4s' }}>❄</div>
+				<div className="snowflake absolute text-red-100 text-2xl animate-[fall_15s_linear_infinite]" style={{ left: '30%', animationDelay: '4s' }}>❄</div>
 				<div className="snowflake absolute text-white text-4xl animate-[fall_11s_linear_infinite]" style={{ left: '40%', animationDelay: '1s' }}>❄</div>
-				<div className="snowflake absolute text-white text-2xl animate-[fall_13s_linear_infinite]" style={{ left: '50%', animationDelay: '3s' }}>❄</div>
+				<div className="snowflake absolute text-red-200 text-2xl animate-[fall_13s_linear_infinite]" style={{ left: '50%', animationDelay: '3s' }}>❄</div>
 				<div className="snowflake absolute text-white text-3xl animate-[fall_14s_linear_infinite]" style={{ left: '60%', animationDelay: '5s' }}>❄</div>
-				<div className="snowflake absolute text-white text-2xl animate-[fall_16s_linear_infinite]" style={{ left: '70%', animationDelay: '2s' }}>❄</div>
+				<div className="snowflake absolute text-red-100 text-2xl animate-[fall_16s_linear_infinite]" style={{ left: '70%', animationDelay: '2s' }}>❄</div>
 				<div className="snowflake absolute text-white text-4xl animate-[fall_12s_linear_infinite]" style={{ left: '80%', animationDelay: '4s' }}>❄</div>
-				<div className="snowflake absolute text-white text-3xl animate-[fall_15s_linear_infinite]" style={{ left: '90%', animationDelay: '6s' }}>❄</div>
+				<div className="snowflake absolute text-red-200 text-3xl animate-[fall_15s_linear_infinite]" style={{ left: '90%', animationDelay: '6s' }}>❄</div>
 
-				{/* Christmas ornaments */}
-				<div className="absolute top-10 left-5 text-6xl animate-pulse">🎄</div>
-				<div className="absolute top-20 right-10 text-5xl animate-bounce" style={{ animationDuration: '3s' }}>⭐</div>
-				<div className="absolute bottom-20 left-10 text-5xl animate-pulse" style={{ animationDelay: '1s' }}>🎁</div>
-				<div className="absolute bottom-10 right-20 text-6xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '2s' }}>🎄</div>
-				<div className="absolute top-1/3 left-20 text-4xl opacity-50">🔔</div>
-				<div className="absolute top-2/3 right-10 text-4xl opacity-50">🎅</div>
+				{/* Santa and Christmas decorations */}
+				<div className="absolute top-10 left-5 text-7xl animate-bounce" style={{ animationDuration: '2s' }}>🎅</div>
+				<div className="absolute top-20 right-10 text-6xl animate-pulse">🎅</div>
+				<div className="absolute bottom-10 right-20 text-7xl animate-pulse" style={{ animationDelay: '2s' }}>🎅</div>
+				<div className="absolute top-1/3 left-20 text-5xl opacity-60 animate-pulse">🤶</div>
+				<div className="absolute top-2/3 right-10 text-5xl opacity-60">🎁</div>
+				<div className="absolute top-1/2 left-5 text-4xl opacity-40">⭐</div>
+				<div className="absolute bottom-1/3 right-5 text-4xl opacity-40 animate-bounce" style={{ animationDuration: '4s' }}>🔔</div>
 			</div>
 
 			<main className="relative z-10 flex w-full max-w-4xl flex-col items-center justify-center gap-8">
-				{/* Video Player */}
-				{!submitted && (
-					<Card className="w-full overflow-hidden shadow-2xl">
-						<CardContent className="p-0">
-							<video
-								ref={videoRef}
-								className="w-full aspect-video bg-black"
-								autoPlay
-								playsInline
-								onEnded={handleVideoEnd}
-								controlsList="nodownload nofullscreen noremoteplayback"
-								disablePictureInPicture
-								onContextMenu={(e) => e.preventDefault()}
+				{/* Initial Claim Button */}
+				{!showVideo && !showForm && !submitted && (
+					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500">
+						<CardContent className="p-8 text-center space-y-6">
+							<div className="text-7xl">🎁</div>
+							<h1 className="text-3xl font-bold text-red-700">
+								You&apos;ve Got a Gift! 🎅
+							</h1>
+							<p className="text-lg text-gray-600">
+								Something special is waiting for you...
+							</p>
+							<Button
+								onClick={handleClaimClick}
+								className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold text-lg py-6"
 							>
-								<source src="/jingle-bells.mp4" type="video/mp4" />
-								Your browser does not support the video tag.
-							</video>
+								Open Your Gift 🎄
+							</Button>
 						</CardContent>
 					</Card>
+				)}
+
+				{/* Video Player */}
+				{showVideo && !showForm && !submitted && (
+					<div className="w-full animate-in fade-in zoom-in duration-300">
+						<video
+							ref={videoRef}
+							className="w-full h-auto rounded-3xl shadow-2xl"
+							playsInline
+							onEnded={handleVideoEnd}
+							controlsList="nodownload nofullscreen noremoteplayback"
+							disablePictureInPicture
+							onContextMenu={(e) => e.preventDefault()}
+						>
+							<source src="/christmas.mp4" type="video/mp4" />
+							Your browser does not support the video tag.
+						</video>
+					</div>
 				)}
 
 				{/* Phone Number Form */}
@@ -100,10 +149,10 @@ export default function Home() {
 					<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 						<CardContent className="p-6">
 							<div className="space-y-4">
-								<div className="text-center space-y-2">
-									<h1 className="text-2xl font-bold text-green-700">
-										🎄 Congratulations! 🎄
-									</h1>
+							<div className="text-center space-y-2">
+								<h1 className="text-2xl font-bold text-red-700">
+									🎅 Congratulations! 🎅
+								</h1>
 									<p className="text-gray-600">
 										Enter your phone number to receive your ₹1000 Amazon voucher!
 									</p>
@@ -122,13 +171,13 @@ export default function Home() {
 										/>
 									</div>
 
-									<Button
-										type="submit"
-										className="w-full bg-green-600 hover:bg-green-700 text-white"
-										disabled={loading}
-									>
-										{loading ? "Sending..." : "Claim My Voucher 🎁"}
-									</Button>
+								<Button
+									type="submit"
+									className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold"
+									disabled={loading}
+								>
+									{loading ? "Sending..." : "Claim My Voucher 🎅🎁"}
+								</Button>
 								</form>
 							</div>
 						</CardContent>
@@ -137,12 +186,12 @@ export default function Home() {
 
 				{/* Success Message */}
 				{submitted && (
-					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500">
-						<CardContent className="p-8 text-center space-y-4">
-							<div className="text-6xl">🎉</div>
-							<h1 className="text-3xl font-bold text-green-700">
-								Success!
-							</h1>
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 border-2 border-red-200">
+					<CardContent className="p-8 text-center space-y-4 bg-linear-to-b from-white to-red-50">
+						<div className="text-6xl">🎅🎉</div>
+						<h1 className="text-3xl font-bold text-red-700">
+							Success!
+						</h1>
 							<p className="text-lg text-gray-600">
 								Your ₹1000 Amazon voucher has been sent to your phone number!
 							</p>
