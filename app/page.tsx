@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import VideoPlayer from "@/components/VideoPlayer";
 
 export default function Home() {
 	const [showVideo, setShowVideo] = useState(false);
@@ -12,16 +13,9 @@ export default function Home() {
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
-	const videoRef = useRef<HTMLVideoElement>(null);
 
 	const handleClaimClick = () => {
 		setShowVideo(true);
-		// Small delay to ensure video element is mounted before playing
-		setTimeout(() => {
-			if (videoRef.current) {
-				videoRef.current.play();
-			}
-		}, 1000);
 	};
 
 	const handleVideoEnd = () => {
@@ -121,26 +115,15 @@ export default function Home() {
 					</Card>
 				)}
 
-				{/* Video Player */}
-				{showVideo && !showForm && !submitted && (
-					<div className="w-full animate-in fade-in zoom-in duration-300">
-						<video
-							ref={videoRef}
-							className="w-full h-auto rounded-3xl shadow-2xl"
-							playsInline
-							onEnded={handleVideoEnd}
-							preload="auto"
-							controlsList="nodownload nofullscreen noremoteplayback"
-							disablePictureInPicture
-							onContextMenu={(e) => e.preventDefault()}
-						>
-							<source src="/christmas.mp4" type="video/mp4" />
-							Your browser does not support the video tag.
-						</video>
-					</div>
-				)}
-
-				{/* Phone Number Form */}
+			{/* Video Player */}
+			{showVideo && !showForm && !submitted && (
+				<div className="w-full animate-in fade-in zoom-in duration-300">
+					<VideoPlayer 
+						src="/christmas.mp4" 
+						onEnded={handleVideoEnd}
+					/>
+				</div>
+			)}				{/* Phone Number Form */}
 				{showForm && !submitted && (
 					<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 						<CardContent className="p-6">
