@@ -71,8 +71,8 @@ export default function Home() {
 					alt="Santa Claus"
 					width={300}
 					height={300}
-					className="drop-shadow-2xl object-contain w-20 sm:w-32 md:w-40 lg:w-48"
-					style={{ 
+					className="drop-shadow-2xl object-contain w-20 sm:w-32 md:w-40"
+					style={{
 						mixBlendMode: 'multiply',
 						filter: 'drop-shadow(0 20px 25px rgb(0 0 0 / 0.15))'
 					}}
@@ -86,13 +86,9 @@ export default function Home() {
 				{/* Snowflakes */}
 				<div className="snowflake absolute text-red-200 sm:text-base md:text-2xl animate-[fall_10s_linear_infinite]" style={{ left: '10%', animationDelay: '0s' }}>❄</div>
 				<div className="snowflake absolute text-white sm:text-base md:text-3xl animate-[fall_12s_linear_infinite]" style={{ left: '20%', animationDelay: '2s' }}>❄</div>
-				<div className="hidden sm:block snowflake absolute text-red-100 sm:text-base md:text-2xl animate-[fall_15s_linear_infinite]" style={{ left: '30%', animationDelay: '4s' }}>❄</div>
 				<div className="snowflake absolute text-white sm:text-base md:text-4xl animate-[fall_11s_linear_infinite]" style={{ left: '40%', animationDelay: '1s' }}>❄</div>
-				<div className="hidden sm:block snowflake absolute text-red-200 sm:text-base md:text-2xl animate-[fall_13s_linear_infinite]" style={{ left: '50%', animationDelay: '3s' }}>❄</div>
 				<div className="snowflake absolute text-white sm:text-base md:text-3xl animate-[fall_14s_linear_infinite]" style={{ left: '60%', animationDelay: '5s' }}>❄</div>
-				<div className="hidden sm:block snowflake absolute text-red-100 sm:text-base md:text-2xl animate-[fall_16s_linear_infinite]" style={{ left: '70%', animationDelay: '2s' }}>❄</div>
 				<div className="snowflake absolute text-white sm:text-base md:text-4xl animate-[fall_12s_linear_infinite]" style={{ left: '80%', animationDelay: '4s' }}>❄</div>
-				<div className="hidden sm:block snowflake absolute text-red-200 sm:text-base md:text-3xl animate-[fall_15s_linear_infinite]" style={{ left: '90%', animationDelay: '6s' }}>❄</div>
 
 				{/* Santa and Christmas decorations */}
 				<div className="absolute top-5 right-5 text-3xl sm:text-5xl md:text-6xl animate-pulse">🎅</div>
@@ -109,15 +105,15 @@ export default function Home() {
 					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500">
 						<CardContent className="p-8 text-center space-y-6">
 							<div className="text-5xl sm:text-7xl">🎁</div>
-							<h1 className="sm:text-base md:text-2xl lg:text-3xl font-bold text-red-700">
+							<h1 className="text-xl lg:text-3xl font-bold text-red-700">
 								You&apos;ve Got a Gift! 🎅
 							</h1>
-							<p className="sm:text-base md:text-lg text-gray-600">
+							<p className="sm:text-base lg:text-lg text-gray-600">
 								Something special is waiting for you...
 							</p>
 							<Button
 								onClick={handleClaimClick}
-								className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold sm:text-base md:text-lg py-6"
+								className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold text-sm sm:text-base py-6"
 							>
 								Open Your Gift 🎄
 							</Button>
@@ -133,6 +129,7 @@ export default function Home() {
 							className="w-full h-auto rounded-3xl shadow-2xl"
 							playsInline
 							onEnded={handleVideoEnd}
+							preload="auto"
 							controlsList="nodownload nofullscreen noremoteplayback"
 							disablePictureInPicture
 							onContextMenu={(e) => e.preventDefault()}
@@ -147,36 +144,36 @@ export default function Home() {
 				{showForm && !submitted && (
 					<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 						<CardContent className="p-6">
-							<div className="space-y-4">
-						<div className="text-center space-y-2">
-							<h1 className="text-lg md:text-xl lg:text-2xl font-bold text-red-700">
-								🎅 Congratulations! 🎅
-							</h1>
-								<p className="text-sm sm:text-base md:text-lg text-gray-600">
-									Enter your phone number to receive your ₹1000 Amazon voucher!
-								</p>
+							<div className="space-y-10">
+								<div className="text-center space-y-6">
+									<h1 className="text-xl lg:text-2xl font-bold text-red-700">
+										🎅 Congratulations! 🎅
+									</h1>
+									<p className="sm:text-base text-gray-600">
+										Enter your phone number to receive your ₹1000 Amazon voucher!
+									</p>
 								</div>
 
 								<form onSubmit={handleSubmit} className="space-y-4">
-								<div>
-								<Input
-									type="tel"
-									placeholder="10-digit phone number"
-									value={phoneNumber}
-									onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-									maxLength={10}
-									className="text-sm sm:text-base md:text-lg"
-									required
-								/>
-								</div>
+									<div>
+										<Input
+											type="tel"
+											placeholder="10-digit phone number"
+											value={phoneNumber}
+											onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+											maxLength={10}
+											className="sm:text-base"
+											required
+										/>
+									</div>
 
-								<Button
-									type="submit"
-									className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold text-sm sm:text-base md:text-lg py-3"
-									disabled={loading}
-								>
-									{loading ? "Sending..." : "Claim My Voucher 🎅🎁"}
-								</Button>
+									<Button
+										type="submit"
+										className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold sm:text-base py-6"
+										disabled={loading}
+									>
+										{loading ? "Sending..." : "Claim My Voucher 🎅🎁"}
+									</Button>
 								</form>
 							</div>
 						</CardContent>
@@ -185,16 +182,16 @@ export default function Home() {
 
 				{/* Success Message */}
 				{submitted && (
-				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 border-2 border-red-200">
-					<CardContent className="p-8 text-center space-y-4 bg-linear-to-b from-white to-red-50">
-					<div className="text-6xl">🎅🎉</div>
-					<h1 className="text-base md:text-2xl lg:text-3xl font-bold text-red-700">
-						Success!
-					</h1>
-						<p className="text-sm sm:text-base md:text-lg text-gray-600">
-							Your ₹1000 Amazon voucher has been sent to your phone number!
-						</p>
-						<p className="text-sm sm:text-base text-gray-500">
+					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-linear-to-b from-white to-red-50">
+						<CardContent className="p-8 text-center space-y-4 ">
+							<div className="text-6xl">🎅🎉</div>
+							<h1 className="text-xl lg:text-3xl font-bold text-red-700">
+								Success!
+							</h1>
+							<p className="sm:text-base lg:text-lg text-gray-600">
+								Your ₹1000 Amazon voucher has been sent to your phone number!
+							</p>
+							<p className="text-sm text-gray-500">
 								Please check your SMS/Email for the voucher code.
 							</p>
 						</CardContent>
