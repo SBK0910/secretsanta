@@ -7,20 +7,19 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import VideoPlayer from "@/components/VideoPlayer";
 
+type Step = "initial" | "video" | "form" | "success";
+
 export default function Home() {
-	const [showVideo, setShowVideo] = useState(false);
-	const [showForm, setShowForm] = useState(false);
+	const [step, setStep] = useState<Step>("initial");
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [loading, setLoading] = useState(false);
-	const [submitted, setSubmitted] = useState(false);
 
 	const handleClaimClick = () => {
-		setShowVideo(true);
+		setStep("video");
 	};
 
 	const handleVideoEnd = () => {
-		setShowVideo(false);
-		setShowForm(true);
+		setStep("form");
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +44,7 @@ export default function Home() {
 			});
 
 			if (response.ok) {
-				setSubmitted(true);
+				setStep("success");
 			} else {
 				alert("Something went wrong. Please try again.");
 			}
@@ -94,9 +93,9 @@ export default function Home() {
 			</div>
 
 			<main className="relative z-10 flex w-full max-w-4xl flex-col items-center justify-center gap-8">
-				{/* Initial Claim Button */}
-				{!showVideo && !showForm && !submitted && (
-					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500">
+			{/* Initial Claim Button */}
+			{step === "initial" && (
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500">
 						<CardContent className="p-8 text-center space-y-6">
 							<div className="text-5xl sm:text-7xl">🎁</div>
 							<h1 className="text-xl lg:text-3xl font-bold text-red-700">
@@ -116,15 +115,15 @@ export default function Home() {
 				)}
 
 			{/* Video Player */}
-			{showVideo && !showForm && !submitted && (
+			{step === "video" && (
 				<div className="w-full animate-in fade-in zoom-in duration-300">
 					<VideoPlayer 
 						src="/christmas.mp4" 
 						onEnded={handleVideoEnd}
 					/>
 				</div>
-			)}				{/* Phone Number Form */}
-				{showForm && !submitted && (
+			)}			{/* Phone Number Form */}
+				{step === "form" && (
 					<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 						<CardContent className="p-6">
 							<div className="space-y-10">
@@ -163,9 +162,9 @@ export default function Home() {
 					</Card>
 				)}
 
-				{/* Success Message */}
-				{submitted && (
-					<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-linear-to-b from-white to-red-50">
+			{/* Success Message */}
+			{step === "success" && (
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-linear-to-b from-white to-red-50">
 						<CardContent className="p-8 text-center space-y-4 ">
 							<div className="text-6xl">🎅🎉</div>
 							<h1 className="text-xl lg:text-3xl font-bold text-red-700">

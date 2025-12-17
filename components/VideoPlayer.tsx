@@ -17,6 +17,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, onEnded, className = "" 
 
 		const handleCanPlayThrough = () => {
 			setIsLoaded(true);
+			if (video) {
+				video.play().catch((error) => {
+					console.error("Autoplay failed:", error);
+				});
+			}
 		};
 
 		if (video) {
