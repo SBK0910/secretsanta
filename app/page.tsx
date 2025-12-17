@@ -6,13 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import VideoPlayer from "@/components/VideoPlayer";
+import { useSearchParams } from "next/navigation";
 
-type Step = "initial" | "video" | "form" | "success";
+type Step = "initial" | "video" | "form" | "success" | "error";
 
 export default function Home() {
 	const [step, setStep] = useState<Step>("initial");
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [voucherUrl, setVoucherUrl] = useState("");
+	const [errorMessage, setErrorMessage] = useState("");
+	const searchParams = useSearchParams();
+	const token = searchParams.get("token");
 
 	const handleClaimClick = () => {
 		setStep("video");
@@ -25,10 +30,9 @@ export default function Home() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		// Validate Indian phone number (10 digits)
-		const phoneRegex = /^[6-9]\d{9}$/;
-		if (!phoneRegex.test(phoneNumber)) {
-			alert("Please enter a valid 10-digit Indian phone number");
+		// Validate last 4 digits (must be 4 digits)
+		if (phoneNumber.length !== 4 || !/^\d{4}$/.test(phoneNumber)) {
+			alert("Please enter the last 4 digits of your phone number");
 			return;
 		}
 
@@ -40,16 +44,21 @@ export default function Home() {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ phoneNumber }),
+				body: JSON.stringify({ phoneNumber, token }),
 			});
 
+			const data = await response.json();
+
 			if (response.ok) {
+				setVoucherUrl(data.voucherUrl);
 				setStep("success");
 			} else {
-				alert("Something went wrong. Please try again.");
+				setErrorMessage(data.error || "Something went wrong");
+				setStep("error");
 			}
 		} catch {
-			alert("Error submitting. Please try again.");
+			setErrorMessage("Error submitting. Please try again.");
+			setStep("error");
 		} finally {
 			setLoading(false);
 		}
@@ -122,9 +131,11 @@ export default function Home() {
 						onEnded={handleVideoEnd}
 					/>
 				</div>
-			)}			{/* Phone Number Form */}
-				{step === "form" && (
-					<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+			)}
+
+			{/* Phone Number Form */}
+			{step === "form" && (
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
 						<CardContent className="p-6">
 							<div className="space-y-10">
 								<div className="text-center space-y-6">
@@ -132,7 +143,7 @@ export default function Home() {
 										🎅 Congratulations! 🎅
 									</h1>
 									<p className="sm:text-base text-gray-600">
-										Enter your phone number to receive your ₹1000 Amazon voucher!
+										Enter the last 4 digits of your phone number to verify and receive your voucher!
 									</p>
 								</div>
 
@@ -140,11 +151,11 @@ export default function Home() {
 									<div>
 										<Input
 											type="tel"
-											placeholder="10-digit phone number"
+											placeholder="Last 4 digits"
 											value={phoneNumber}
-											onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-											maxLength={10}
-											className="sm:text-base"
+											onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 4))}
+											maxLength={4}
+											className="sm:text-base text-center text-2xl tracking-widest"
 											required
 										/>
 									</div>
@@ -164,22 +175,40 @@ export default function Home() {
 
 			{/* Success Message */}
 			{step === "success" && (
-				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-linear-to-b from-white to-red-50">
-						<CardContent className="p-8 text-center space-y-4 ">
-							<div className="text-6xl">🎅🎉</div>
-							<h1 className="text-xl lg:text-3xl font-bold text-red-700">
-								Success!
-							</h1>
-							<p className="sm:text-base lg:text-lg text-gray-600">
-								Your ₹1000 Amazon voucher has been sent to your phone number!
-							</p>
-							<p className="text-sm text-gray-500">
-								Please check your SMS/Email for the voucher code.
-							</p>
-						</CardContent>
-					</Card>
-				)}
-			</main>
-		</div>
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 bg-gradient-to-b from-white to-red-50">
+					<CardContent className="p-8 text-center space-y-6">
+						<div className="text-6xl">🎅🎉</div>
+						<h1 className="text-xl lg:text-3xl font-bold text-red-700">
+							Success!
+						</h1>
+						<p className="sm:text-base lg:text-lg text-gray-600">
+							Your Amazon voucher is ready!
+						</p>
+						<Button
+							onClick={() => window.open(voucherUrl, "_blank")}
+							className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold sm:text-base py-6"
+						>
+							Claim Your Voucher 🎁
+						</Button>
+					</CardContent>
+				</Card>
+			)}
+
+			{/* Error Message */}
+			{step === "error" && (
+				<Card className="w-full max-w-md shadow-xl animate-in fade-in zoom-in duration-500 border-2 border-red-500">
+					<CardContent className="p-8 text-center space-y-4">
+						<div className="text-6xl">🎅</div>
+						<h1 className="text-xl lg:text-3xl font-bold text-red-700">
+							Access Denied
+						</h1>
+						<p className="sm:text-base text-gray-600">
+							{errorMessage || "You need a valid invitation link to access this gift."}
+						</p>
+					</CardContent>
+				</Card>
+			)}
+		</main>
+	</div>
 	);
 }

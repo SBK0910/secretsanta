@@ -1,57 +1,65 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "@/lib/jwt";
 
 export async function POST(request: NextRequest) {
-  try {
-    const { phoneNumber } = await request.json();
+	try {
+		const { phoneNumber, token } = await request.json();
 
-    // Validate phone number
-    const phoneRegex = /^[6-9]\d{9}$/;
-    if (!phoneRegex.test(phoneNumber)) {
-      return NextResponse.json(
-        { error: "Invalid phone number" },
-        { status: 400 }
-      );
-    }
+		// Validate token is provided
+		if (!token) {
+			return NextResponse.json(
+				{ error: "Token is required" },
+				{ status: 401 }
+			);
+		}
 
-    // TODO: Integrate with your voucher delivery service
-    // Examples:
-    // - Twilio SMS: await sendSMS(phoneNumber, voucherCode)
-    // - Email: await sendEmail(phoneNumber, voucherCode)
-    // - WhatsApp Business API: await sendWhatsApp(phoneNumber, voucherCode)
-    
-    // For now, just log the phone number (REMOVE IN PRODUCTION)
-    console.log("Voucher request for phone:", phoneNumber);
-    
-    // Simulate voucher generation
-    const voucherCode = `AMZ-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-    
-    // TODO: Store in database to prevent duplicates
-    // await db.vouchers.create({
-    //   phoneNumber,
-    //   voucherCode,
-    //   amount: 1000,
-    //   createdAt: new Date(),
-    // });
+		// Verify JWT token
+		const payload = await verifyToken(token);
+		if (!payload) {
+			return NextResponse.json(
+				{ error: "Invalid or expired token" },
+				{ status: 401 }
+			);
+		}
 
-    // TODO: Send voucher via your preferred method
-    // Example with Twilio:
-    // await twilioClient.messages.create({
-    //   body: `Congratulations! Your Amazon voucher code: ${voucherCode} worth ₹1000. Happy Shopping! 🎁`,
-    //   to: `+91${phoneNumber}`,
-    //   from: process.env.TWILIO_PHONE_NUMBER,
-    // });
+		// Validate phone number is 4 digits
+		if (!/^\d{4}$/.test(phoneNumber)) {
+			return NextResponse.json(
+				{ error: "Please provide last 4 digits of phone number" },
+				{ status: 400 }
+			);
+		}
 
-    return NextResponse.json({
-      success: true,
-      message: "Voucher sent successfully",
-      // Don't send voucher code in production, send via SMS/Email only
-      debug: { voucherCode }, // REMOVE IN PRODUCTION
-    });
-  } catch (error) {
-    console.error("Error processing voucher request:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+		// Verify last 4 digits match the allowed number from env
+		const allowedLast4 = process.env.ALLOWED_PHONE_LAST4;
+		if (phoneNumber !== allowedLast4) {
+			return NextResponse.json(
+				{ error: "Phone number not authorized" },
+				{ status: 403 }
+			);
+		}
+
+		// Get voucher URL from environment
+		const voucherUrl = process.env.VOUCHER_URL;
+		if (!voucherUrl) {
+			return NextResponse.json(
+				{ error: "Voucher URL not configured" },
+				{ status: 500 }
+			);
+		}
+
+		console.log("Voucher sent for phone:", phoneNumber);
+
+		return NextResponse.json({
+			success: true,
+			message: "Voucher sent successfully",
+			voucherUrl,
+		});
+	} catch (error) {
+		console.error("Voucher error:", error);
+		return NextResponse.json(
+			{ error: "Failed to process voucher request" },
+			{ status: 500 }
+		);
+	}
 }
