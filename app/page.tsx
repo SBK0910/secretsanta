@@ -56,7 +56,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-red-600 via-white to-red-700 p-4">
+		<div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-linear-to-br from-red-600 via-white to-red-700 p-4">
 			{/* Santa Image - fixed position bottom left, non-colliding */}
 			<div className="fixed bottom-1 left-1 z-0 pointer-events-none select-none">
 				<Image
