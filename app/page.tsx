@@ -155,7 +155,7 @@ function SecretSantaContent() {
 											value={phoneNumber}
 											onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 4))}
 											maxLength={4}
-											className="sm:text-base text-center text-2xl tracking-widest"
+											className="text-base text-center tracking-widest"
 											required
 										/>
 									</div>
